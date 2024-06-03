@@ -9,6 +9,31 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.utility.DockerImageName;
 
+/**
+ * <p>ArcusContainer represents a Docker container running Arcus Memcached.</p>
+ *
+ * <p>ArcusContainer extends GenericContainer, which is used for creating and managing Docker containers.</p>
+ *
+ * <p>Usage:</p>
+ *
+ * <pre>{@code
+ * // Create a new instance of ArcusContainer with default image name and properties
+ * ArcusContainer container = ArcusContainer.create();
+ *
+ * // Create a new instance of ArcusContainer with custom properties
+ * ArcusContainerProps props = new ArcusContainerProps.Builder()
+ *                                 .memorySize(128)
+ *                                 .port(11221)
+ *                                 .build();
+ * ArcusContainer container = ArcusContainer.create(props);
+ *
+ * // Create a new instance of ArcusContainer with custom Docker image name
+ * DockerImageName imageName = DockerImageName.parse("jam2in/arcus-memcached:latest");
+ * ArcusContainer container = ArcusContainer.create(imageName);
+ * }</pre>
+ *
+ * Note: To use this class, you should have Docker installed on your machine.
+ */
 public class ArcusContainer extends GenericContainer<ArcusContainer> {
 
   public static final DockerImageName DEFAULT_ARCUS_IMAGE_NAME = DockerImageName.parse("jam2in/arcus-memcached");
@@ -27,14 +52,34 @@ public class ArcusContainer extends GenericContainer<ArcusContainer> {
     setupContainer(port, host, network, memSize);
   }
 
+  /**
+   * Creates a new instance of ArcusContainer with default image name and properties.
+   *
+   * @return a new instance of {@link ArcusContainer} instance
+   *
+   * @see ArcusContainer#DEFAULT_ARCUS_IMAGE_NAME
+   * @see ArcusContainerProps.Builder#build()
+   */
   public static ArcusContainer create() {
     return new ArcusContainer(DEFAULT_ARCUS_IMAGE_NAME, new ArcusContainerProps.Builder().build());
   }
 
+  /**
+   * Creates a new instance of ArcusContainer with the given properties.
+   *
+   * @param props The properties to configure the ArcusContainer.
+   * @return a new instance of {@link ArcusContainer} instance
+   */
   public static ArcusContainer create(ArcusContainerProps props) {
     return new ArcusContainer(DEFAULT_ARCUS_IMAGE_NAME, props);
   }
 
+  /**
+   * Creates a new instance of ArcusContainer with the given image name.
+   *
+   * @param imageName The Docker image name.
+   * @return a new instance of {@link ArcusContainer} instance
+   */
   public static ArcusContainer create(DockerImageName imageName) {
     return new ArcusContainer(imageName, new ArcusContainerProps.Builder().build());
   }
