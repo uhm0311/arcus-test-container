@@ -84,6 +84,17 @@ public class ArcusContainer extends GenericContainer<ArcusContainer> {
     return new ArcusContainer(imageName, new ArcusContainerProps.Builder().build());
   }
 
+  /**
+   * Creates a new instance of ArcusContainer with the given image name and props.
+   *
+   * @param imageName The Docker image name.
+   * @param props The properties to configure the ArcusContainer.
+   * @return a new instance of {@link ArcusContainer} instance
+   */
+  public static ArcusContainer create(DockerImageName imageName, ArcusContainerProps props) {
+    return new ArcusContainer(imageName, props);
+  }
+
   private void setupContainer(int port, int memSize) {
     setupContainer(port, null, null, memSize);
   }
