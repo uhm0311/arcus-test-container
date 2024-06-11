@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - develop
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: JDK ${{ matrix.jdk }}, ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        jdk: [ 8, 11, 17 ]
+        os: [ ubuntu-20.04 ]
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK ${{ matrix.jdk }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.jdk }}
+          distribution: 'temurin'
+          cache: 'maven'
+      - name: Run All Test
+        run: mvn clean verify
