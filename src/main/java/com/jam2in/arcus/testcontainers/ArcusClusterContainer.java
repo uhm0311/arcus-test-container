@@ -1,9 +1,5 @@
 package com.jam2in.arcus.testcontainers;
 
-import com.github.dockerjava.api.model.ExposedPort;
-import com.github.dockerjava.api.model.PortBinding;
-import com.github.dockerjava.api.model.Ports;
-
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -51,7 +47,7 @@ import org.testcontainers.utility.DockerImageName;
  *
  * Note: To use this class, you should have Docker installed on your machine.
  */
-public class ArcusClusterContainer extends GenericContainer<ArcusClusterContainer> {
+public class ArcusClusterContainer extends GenericContainer<ArcusClusterContainer> implements PortAllocator {
 
   private static final int DEFAULT_ZK_CONTAINER_PORT = 2181;
 
@@ -71,11 +67,11 @@ public class ArcusClusterContainer extends GenericContainer<ArcusClusterContaine
 
   private ArcusClusterContainer(DockerImageName imageName, ArcusContainerProps props) {
     this.network = Network.newNetwork();
-    this.zkContainer = new ZookeeperContainer(network, props.getZkPort());
+    this.zkContainer = new ZookeeperContainer(network);
     this.serviceCode = props.getServiceCode();
 
     for (int i = 0; i < props.getClusterSize(); i++) {
-      String address = "cache" + (i + 1) + ":" + (props.getPort() + i);
+      String address = "cache" + (i + 1) + ":" + getPort();
       cacheNodes.add(address);
       containers.add(new ArcusContainer(imageName, address, network, props.getMemorySize()));
     }
@@ -120,6 +116,24 @@ public class ArcusClusterContainer extends GenericContainer<ArcusClusterContaine
    */
   public static ArcusClusterContainer create(DockerImageName imageName, ArcusContainerProps props) {
     return new ArcusClusterContainer(imageName, props);
+  }
+
+  /**
+   * invoke for creating ArcusClientPool.
+   * @return a cluster zk host posts address.
+   */
+  public String getHostPorts() {
+    return "127.0.0.1" + ":" + getFirstMappedPort();
+  }
+
+  @Override
+  public Integer getFirstMappedPort() {
+    return zkContainer.getFirstMappedPort();
+  }
+
+  @Override
+  public String getDockerImageName() {
+    return containers.get(0).getDockerImageName();
   }
 
   @Override
@@ -176,13 +190,12 @@ public class ArcusClusterContainer extends GenericContainer<ArcusClusterContaine
   private static class ZookeeperContainer extends GenericContainer<ZookeeperContainer> {
     private static final DockerImageName DEFAULT_ZK_IMAGE_NAME = DockerImageName.parse("zookeeper:3.5.9");
 
-    public ZookeeperContainer(Network network, int port) {
+    public ZookeeperContainer(Network network) {
       super(DEFAULT_ZK_IMAGE_NAME);
       withNetwork(network);
       withEnv("ZOO_MY_ID", "1");
       withCreateContainerCmdModifier(cmd -> {
         cmd.withHostName("zoo1");
-        cmd.getHostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(port), new ExposedPort(DEFAULT_ZK_CONTAINER_PORT)));
       });
       withExposedPorts(DEFAULT_ZK_CONTAINER_PORT);
     }

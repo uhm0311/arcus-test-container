@@ -20,7 +20,8 @@ class ArcusClusterContainerTestOther extends ArcusClusterTestBase {
   @Test
   void createArcusContainerSingle() throws ExecutionException, InterruptedException {
     //given
-    ArcusClientPool arcusClient = ArcusClient.createArcusClientPool("test", new ConnectionFactoryBuilder(), 2);
+    ArcusClientPool arcusClient = ArcusClient.createArcusClientPool(ARCUS_CLUSTER_CONTAINER.getHostPorts(),
+            "test", new ConnectionFactoryBuilder(), 2);
     
     //when
     OperationFuture<Boolean> set = arcusClient.set("test2", 10, "testValue2");

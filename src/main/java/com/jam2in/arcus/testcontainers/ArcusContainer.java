@@ -34,13 +34,13 @@ import org.testcontainers.utility.DockerImageName;
  *
  * Note: To use this class, you should have Docker installed on your machine.
  */
-public class ArcusContainer extends GenericContainer<ArcusContainer> {
+public class ArcusContainer extends GenericContainer<ArcusContainer> implements PortAllocator {
 
   public static final DockerImageName DEFAULT_ARCUS_IMAGE_NAME = DockerImageName.parse("jam2in/arcus-memcached");
 
   private ArcusContainer(DockerImageName dockerImageName, ArcusContainerProps props) {
     super(dockerImageName);
-    setupContainer(props.getPort(), props.getMemorySize());
+    setupContainer(getPort(), props.getMemorySize());
   }
 
   ArcusContainer(DockerImageName imageName, String address, Network network, int memSize) {

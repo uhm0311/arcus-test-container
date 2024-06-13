@@ -2,9 +2,13 @@ package com.jam2in.arcus.testcontainers;
 
 import org.junit.jupiter.api.Test;
 
+import org.testcontainers.utility.DockerImageName;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ArcusContainerPropsTest {
     
@@ -107,83 +111,59 @@ public class ArcusContainerPropsTest {
   }
 
   @Test
-  void testPort() {
-    int portNum = 15244;
-    ArcusContainerProps arcusContainerProps = ArcusContainerProps.builder()
-            .port(portNum)
+  void testCreateMethodWithoutParams() {
+    //when
+    ArcusClusterContainer container = ArcusClusterContainer.create();
+    //then
+    assertThat(container).isNotNull();
+    assertThat(container.getDockerImageName())
+            .isEqualTo(ArcusContainer.DEFAULT_ARCUS_IMAGE_NAME.toString());
+  }
+
+  @Test
+  void testCreateMethodWithPropsParam(){
+    //given
+    ArcusContainerProps props = new ArcusContainerProps.Builder().build();
+    //when
+    ArcusClusterContainer container = ArcusClusterContainer.create(props);
+    //then
+    assertThat(container).isNotNull();
+  }
+
+  @Test
+  void testCreateMethodWithImageNameParam() {
+    //given
+    DockerImageName imageName = DockerImageName.parse("jam2in/arcus-memcached:develop");
+    //when
+    ArcusClusterContainer container = ArcusClusterContainer.create(imageName);
+    //then
+    assertThat(container).isNotNull();
+    assertThat(container.getDockerImageName()).isEqualTo(imageName.toString());
+  }
+
+  @Test
+  void testCreateMethodWithImageNameAndPropsParams() {
+    //given
+    DockerImageName imageName = DockerImageName.parse("jam2in/arcus-memcached:develop");
+    ArcusContainerProps props = new ArcusContainerProps.Builder().build();
+    //when
+    ArcusClusterContainer container = ArcusClusterContainer.create(imageName, props);
+    //then
+    assertThat(container).isNotNull();
+  }
+
+  @Test
+  void createArcusContainerWithPropsTest() {
+    //given
+    ArcusContainerProps props = ArcusContainerProps.builder()
+            .memorySize(512)
             .build();
 
-    assertEquals(portNum, arcusContainerProps.getPort());
-  }
+    //when
+    ArcusContainer arcusContainer = ArcusContainer.create(props);
 
-  @Test
-  void testPort_whenMax() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> ArcusContainerProps.builder()
-            .port(65536)
-            .build());
-    String expectedMessage = "Invalid port number.";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
-  }
-
-  @Test
-  void testPort_whenNegative() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> ArcusContainerProps.builder()
-            .port(-1)
-            .build());
-
-    String expectedMessage = "Invalid port number.";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
-  }
-
-  @Test
-  void testPort_whenNotSet() {
-    ArcusContainerProps arcusContainerProps = ArcusContainerProps.builder()
-            .build();
-
-    assertEquals(11211, arcusContainerProps.getPort());
-  }
-
-  @Test
-  void testZkPort() {
-    int zkPortNum = 5789;
-    ArcusContainerProps arcusContainerProps = ArcusContainerProps.builder()
-            .zkPort(zkPortNum)
-            .build();
-
-    assertEquals(zkPortNum, arcusContainerProps.getZkPort());
-  }
-
-  @Test
-  void testZkPort_whenMax() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> ArcusContainerProps.builder()
-            .zkPort(65536)
-            .build());
-    String expectedMessage = "Invalid zookeeper port number.";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
-  }
-
-  @Test
-  void testZkPort_whenNegative() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> ArcusContainerProps.builder()
-            .zkPort(-1)
-            .build());
-    String expectedMessage = "Invalid zookeeper port number.";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
-  }
-
-  @Test
-  void testZkPort_whenNotSet() {
-    ArcusContainerProps arcusContainerProps = ArcusContainerProps.builder()
-            .build();
-
-    assertEquals(2181, arcusContainerProps.getZkPort());
+    //then
+    assertThat(arcusContainer.getDockerImageName())
+            .isEqualTo(ArcusContainer.DEFAULT_ARCUS_IMAGE_NAME.toString());
   }
 }
