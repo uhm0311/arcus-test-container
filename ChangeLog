@@ -1,0 +1,7 @@
+2024-07-01 [version 0.0.1-SNAPSHOT]
+## 🐣 New Features
+* arcus-test-container 0.0.1-SNAPSHOT is opened. (Apache License 2.0)
+* Add ArcusContainer for single node cache server.
+* Add ArcusClusterContainer for cluster cache servers.
+## ✅ Testing
+* Add unit test for ArcusContainer and ArcusClusterContainer.

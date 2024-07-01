@@ -10,16 +10,16 @@ ___
 ### Gradle
 ```groovy
 dependencies {
-    testImplementation "com.jam2in:arcus-test-container:1.0.0-SNAPSHOT"
+    testImplementation "com.jam2in.arcus:arcus-test-container:0.0.1-SNAPSHOT"
 }
 ```
 
 ### Maven
 ```xml
 <dependency>
-    <groupId>com.jam2in</groupId>
+    <groupId>com.jam2in.arcus</groupId>
     <artifactId>arcus-test-container</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>0.0.1-SNAPSHOT</version>
     <scope>test</scope>
 </dependency>
 ```
