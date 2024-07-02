@@ -5,6 +5,8 @@ import com.github.dockerjava.api.model.PortBinding;
 import com.github.dockerjava.api.model.Ports;
 import com.github.dockerjava.api.model.RestartPolicy;
 
+import java.util.Objects;
+
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.utility.DockerImageName;
@@ -100,25 +102,26 @@ public class ArcusContainer extends GenericContainer<ArcusContainer> implements 
   }
 
   private void setupContainer(int port, String host, Network network, int memorySize) {
-    withCreateContainerCmdModifier(cmd -> {
+    this.withCreateContainerCmdModifier(cmd -> {
       if (host != null) {
         cmd.withHostName(host);
       }
-      cmd.getHostConfig().withRestartPolicy(RestartPolicy.alwaysRestart());
-      cmd.getHostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(port), new ExposedPort(port)));
+      Objects.requireNonNull(cmd.getHostConfig())
+              .withRestartPolicy(RestartPolicy.alwaysRestart())
+              .withPortBindings(new PortBinding(Ports.Binding.bindPort(port), new ExposedPort(port)));
     });
-    withExposedPorts(port);
-    withCommand(buildContainerCommand(port, network, memorySize));
+    this.withExposedPorts(port);
+    this.withCommand(buildContainerCommand(port, network, memorySize));
   }
 
   private String buildContainerCommand(int port, Network network, int memorySize) {
     StringBuilder sb = new StringBuilder();
-    sb.append("-m " + memorySize + " ");
-    sb.append("-p " + port);
+    sb.append("-m ").append(memorySize).append(" ");
+    sb.append("-p ").append(port);
 
     if (network != null) {
       sb.append(" -z zoo1:2181");
-      withEnv("ARCUS_CACHE_PUBLIC_IP", "127.0.0.1");
+      this.withEnv("ARCUS_CACHE_PUBLIC_IP", "127.0.0.1");
     }
     return sb.toString();
   }

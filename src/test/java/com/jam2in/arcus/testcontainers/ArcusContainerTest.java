@@ -2,8 +2,7 @@ package com.jam2in.arcus.testcontainers;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 
 import net.spy.memcached.ArcusClient;
@@ -29,10 +28,8 @@ public class ArcusContainerTest {
     //given
     ArcusClient arcusClient = new ArcusClient(
             new DefaultConnectionFactory(),
-            new ArrayList<>(Arrays.asList(
-                    new InetSocketAddress(
-                            "127.0.0.1",
-                            arcusContainer.getFirstMappedPort()))));
+            Collections.singletonList(
+                    new InetSocketAddress("127.0.0.1", arcusContainer.getFirstMappedPort())));
     //when
     Boolean b = arcusClient.set("test", 10, "singleTestValue").get();
 

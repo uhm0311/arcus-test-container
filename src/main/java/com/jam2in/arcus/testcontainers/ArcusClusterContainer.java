@@ -3,6 +3,7 @@ package com.jam2in.arcus.testcontainers;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.testcontainers.containers.ContainerState;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.utility.DockerImageName;
@@ -58,7 +59,6 @@ public class ArcusClusterContainer extends GenericContainer<ArcusClusterContaine
   private static final String ZPATH_CLIENT_LIST = ZPATH_ARCUS + "/client_list";
   private static final String ZPATH_CACHE_SERVER_MAPPING = ZPATH_ARCUS + "/cache_server_mapping";
 
-  private final Network network;
   private final ZookeeperContainer zkContainer;
   private final String serviceCode;
 
@@ -66,7 +66,9 @@ public class ArcusClusterContainer extends GenericContainer<ArcusClusterContaine
   private final ArrayList<ArcusContainer> containers = new ArrayList<>();
 
   private ArcusClusterContainer(DockerImageName imageName, ArcusContainerProps props) {
-    this.network = Network.newNetwork();
+    super(imageName);
+
+    final Network network = Network.newNetwork();
     this.zkContainer = new ZookeeperContainer(network);
     this.serviceCode = props.getServiceCode();
 
@@ -132,42 +134,35 @@ public class ArcusClusterContainer extends GenericContainer<ArcusClusterContaine
   }
 
   @Override
-  public String getDockerImageName() {
-    return containers.get(0).getDockerImageName();
-  }
-
-  @Override
   public void start() {
     zkContainer.start();
     try {
       createZnode();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    } catch (InterruptedException e) {
+    } catch (IOException | InterruptedException e) {
       throw new RuntimeException(e);
     }
-    containers.stream().forEach(ac -> ac.start());
+    containers.forEach(ArcusContainer::start);
   }
 
   @Override
   public boolean isRunning() {
-    return containers.stream().allMatch(c -> c.isRunning()) && zkContainer.isRunning();
+    return containers.stream().allMatch(ContainerState::isRunning) && zkContainer.isRunning();
   }
 
   @Override
   public void stop() {
-    containers.stream().forEach(ac -> ac.stop());
+    containers.forEach(ArcusContainer::stop);
     zkContainer.stop();
   }
 
   @Override
   public boolean isCreated() {
-    return containers.stream().allMatch(c -> c.isCreated()) && zkContainer.isCreated();
+    return containers.stream().allMatch(ContainerState::isCreated) && zkContainer.isCreated();
   }
 
   @Override
   public boolean isHealthy() {
-    return containers.stream().allMatch(c -> c.isHealthy()) && zkContainer.isHealthy();
+    return containers.stream().allMatch(ContainerState::isHealthy) && zkContainer.isHealthy();
   }
 
   private void createZnode() throws IOException, InterruptedException {
@@ -192,12 +187,13 @@ public class ArcusClusterContainer extends GenericContainer<ArcusClusterContaine
 
     public ZookeeperContainer(Network network) {
       super(DEFAULT_ZK_IMAGE_NAME);
-      withNetwork(network);
-      withEnv("ZOO_MY_ID", "1");
-      withCreateContainerCmdModifier(cmd -> {
+
+      this.withNetwork(network);
+      this.withEnv("ZOO_MY_ID", "1");
+      this.withCreateContainerCmdModifier(cmd -> {
         cmd.withHostName("zoo1");
       });
-      withExposedPorts(DEFAULT_ZK_CONTAINER_PORT);
+      this.withExposedPorts(DEFAULT_ZK_CONTAINER_PORT);
     }
   }
 }

@@ -160,10 +160,10 @@ public class ArcusContainerPropsTest {
             .build();
 
     //when
-    ArcusContainer arcusContainer = ArcusContainer.create(props);
-
-    //then
-    assertThat(arcusContainer.getDockerImageName())
-            .isEqualTo(ArcusContainer.DEFAULT_ARCUS_IMAGE_NAME.toString());
+    try (ArcusContainer arcusContainer = ArcusContainer.create(props)) {
+      //then
+      assertThat(arcusContainer.getDockerImageName())
+              .isEqualTo(ArcusContainer.DEFAULT_ARCUS_IMAGE_NAME.toString());
+    }
   }
 }
