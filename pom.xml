@@ -14,6 +14,27 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <scm>
+        <url>scm:git:https://github.com/jam2in/arcus-test-container.git</url>
+        <connection>scm:git:https://github.com/jam2in/arcus-test-container.git</connection>
+        <developerConnection>scm:git:https://github.com/jam2in/arcus-test-container.git</developerConnection>
+    </scm>
+    <developers>
+        <developer>
+            <id>jam2in</id>
+            <name>JaM2in</name>
+            <organization>JaM2in Corp.</organization>
+            <organizationUrl>https://www.jam2in.com</organizationUrl>
+        </developer>
+    </developers>
+
     <dependencies>
         <dependency>
             <groupId>org.testcontainers</groupId>
