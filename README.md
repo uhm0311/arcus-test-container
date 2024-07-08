@@ -8,6 +8,17 @@ ___
 ## Getting Started
 ___
 ### Gradle
+
+#### Repository
+
+```groovy
+repositories {
+    url "https://oss.sonatype.org/content/repositories/snapshots"   
+}
+```
+
+#### Dependency
+
 ```groovy
 dependencies {
     testImplementation "com.jam2in.arcus:arcus-test-container:0.0.1-SNAPSHOT"
@@ -15,6 +26,20 @@ dependencies {
 ```
 
 ### Maven
+
+#### Repository
+
+```xml
+<repository>
+    <id>snapshots-repo</id>
+    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    <releases><enabled>false</enabled></releases>
+    <snapshots><enabled>true</enabled></snapshots>
+</repository>
+```
+
+#### Dependency
+
 ```xml
 <dependency>
     <groupId>com.jam2in.arcus</groupId>
